@@ -140,7 +140,15 @@ class ST7789:
         self._wcd(b"\x2b", pack(b'>HH', self.y_s, self.y_s + self.y_w))
         # change mode
         self._wcd(b"\x36", int.to_bytes(MODE[self.mode], 1, "little"))
-        
+    
+    def change_mode(self, mode):
+        ''' Change display mode '''
+        if mode < 0 or mode > 7:
+            print(mode, " is not a valid mode !")
+            return
+        self.mode = mode
+        self.set_frame()
+    
     def set_window(self, xs, ys, xe, ye):
         ''' set widow to rectangle '''
         # Col address set.
@@ -213,9 +221,38 @@ class ST7789:
                 y0 += ystep
                 err += dx
             x0 += 1
+    
+    def circle(self, xc, yc, r, color):
+        ''' Draw a circle '''
+        f = 1 - r
+        ddF_x = 1
+        ddF_y = -2 * r
+        x = 0
+        y = r
+        self.pixel(xc  , yc+r, color)
+        self.pixel(xc  , yc-r, color)
+        self.pixel(xc+r, yc  , color)
+        self.pixel(xc-r, yc  , color)
+        while x < y:
+            if f >= 0:
+                y -= 1
+                ddF_y += 2
+                f += ddF_y
+            x += 1
+            ddF_x += 2
+            f += ddF_x
+            self.pixel(xc + x, yc + y, color)
+            self.pixel(xc - x, yc + y, color)
+            self.pixel(xc + x, yc - y, color)
+            self.pixel(xc - x, yc - y, color)
+            self.pixel(xc + y, yc + x, color)
+            self.pixel(xc - y, yc + x, color)
+            self.pixel(xc + y, yc - x, color)
+            self.pixel(xc - y, yc - x, color)
+
 
     def blit_buffer(self, buffer, x, y, width, height):
-        ''' Copy buffer to display rectangle '''
+        ''' Copy buffer to rectangle '''
         self.set_window(x, y, x + width - 1, y + height - 1)
         self._dc(0)
         self._cs(0)

@@ -10,7 +10,7 @@ cs    = Pin(0, Pin.OUT)
 dc    = Pin(1, Pin.OUT)
 bl    = Pin(5, Pin.OUT)
 
-st = ST7789(spi, cs, dc, reset, bl, height=320, width=120, disp_mode=0)
+st = ST7789(spi, cs, dc, reset, bl, disp_mode=2)
 
 colors = (RED, GREEN, CYAN, MAGENTA, YELLOW, ORANGE, WHITE, BLUE, BLACK)
 
@@ -27,7 +27,28 @@ st.rect(60, 60, 50, 200, GREEN)
 sleep(0.5)
 st.fill_rect(80, 80, 10, 160, RED)
 sleep(2)
-
+#
+st.clear(BLUE)
+st.circle(85, 160, 2, MAGENTA)
+sleep(0.5)
+st.circle(85, 160, 10, YELLOW)
+sleep(0.5)
+st.circle(85, 160, 20, WHITE)
+sleep(0.5)
+st.circle(85, 160, 30, RED)
+sleep(0.5)
+st.circle(85, 160, 40, GREEN)
+sleep(2)
+st.circle(85, 160, 2, BLUE)
+sleep(0.5)
+st.circle(85, 160, 10, BLUE)
+sleep(0.5)
+st.circle(85, 160, 20, BLUE)
+sleep(0.5)
+st.circle(85, 160, 30, BLUE)
+sleep(0.5)
+st.circle(85, 160, 40, BLUE)
+sleep(2)
 st.clear()
 import vga1_8x8 as font
 st.text(font, '8x8', 10, 10, WHITE)
@@ -51,7 +72,8 @@ sleep(3)
 st.clear()
 import vga1_bold_16x16 as font
 for mode in range(0,8,2):
-    st.mode = mode
-    st.set_frame()
+    st.change_mode(mode)
     st.text(font, 'mode='+str(mode), 10, 10, colors[mode])
     sleep(0.5)
+
+st.change_mode(2)
