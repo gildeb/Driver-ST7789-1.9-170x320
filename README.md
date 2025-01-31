@@ -2,5 +2,5 @@
 Testé sur ESP32-C3 Supermini
 
 <p align="center">
-  <img src="./branchement.png" width="800">
+  <img src="./Branchement.png" width="800">
 <p/>
