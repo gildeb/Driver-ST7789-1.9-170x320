@@ -77,3 +77,10 @@ for mode in range(0,8,2):
     sleep(0.5)
 
 st.change_mode(2)
+
+st.clear()
+st.round_box(75, 110, 20, 80, 10, WHITE)
+st.round_box(55, 90, 60, 120, 20, GREEN)
+st.round_box(35, 70, 100, 160, 30, RED)
+sleep(3)
+st.clear()

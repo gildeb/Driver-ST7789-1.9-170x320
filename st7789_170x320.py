@@ -11,6 +11,7 @@
 from time import sleep_ms
 import gc
 from struct import pack, unpack
+from math import atan2, pi
 
 # ST7789 commands
 _ST7789_SWRESET = b"\x01"
@@ -249,8 +250,58 @@ class ST7789:
             self.pixel(xc - y, yc + x, color)
             self.pixel(xc + y, yc - x, color)
             self.pixel(xc - y, yc - x, color)
+    
+    def arc(self, xc, yc, r, alpha1, alpha2, color):
+        ''' Draw arc [alpha1;alpha2]
+                alpha1 < alpha2 in [-180°;180°] '''
+        def set_pixel(xc, yc, x, y, alpha1, alpha2, color):
+            if (-alpha2 <= atan2(y, x)) and (atan2(y, x) <= -alpha1):
+                self.pixel(x+xc, y+yc, color)
 
+        f = 1 - r
+        ddF_x = 1
+        ddF_y = -2 * r
+        x = 0
+        y = r
 
+        alpha1 *= pi/180
+        alpha2 *= pi/180
+
+        set_pixel( xc, yc,  0,  r, alpha1, alpha2, color)
+        set_pixel( xc, yc,  0, -r, alpha1, alpha2, color)
+        set_pixel( xc, yc,  r,  0, alpha1, alpha2, color)
+        set_pixel( xc, yc, -r,  0, alpha1, alpha2, color)
+
+        while x < y:
+            if f >= 0:
+                y -= 1
+                ddF_y += 2
+                f += ddF_y
+            x += 1
+            ddF_x += 2
+            f += ddF_x
+
+            set_pixel(xc, yc,  x,  y, alpha1, alpha2, color)
+            set_pixel(xc, yc, -x,  y, alpha1, alpha2, color)
+            set_pixel(xc, yc,  x, -y, alpha1, alpha2, color)
+            set_pixel(xc, yc, -x, -y, alpha1, alpha2, color)
+            set_pixel(xc, yc,  y,  x, alpha1, alpha2, color)
+            set_pixel(xc, yc, -y,  x, alpha1, alpha2, color)
+            set_pixel(xc, yc,  y, -x, alpha1, alpha2, color)
+            set_pixel(xc, yc, -y, -x, alpha1, alpha2, color)
+
+    def round_box(self, x, y, width, height, r, color):
+        ''' Draw rectangle with round corners '''
+        if 2*r > min(width, height): r = min(width, height)//2
+        self.hline(x+r, y, width-2*r, color)
+        self.vline(x, y+r, height-2*r, color)
+        self.vline(x+width, y+r, height-2*r, color)
+        self.hline(x+r, y+height, width-2*r, color)
+        self.arc(x+r, y+r, r, 90, 180, color)
+        self.arc(x+width-r, y+r, r, 0, 90, color)
+        self.arc(x+r, y+height-r, r, -180, -90, color)
+        self.arc(x+width-r, y+height-r, r, -90, 0, color)
+        
     def blit_buffer(self, buffer, x, y, width, height):
         ''' Copy buffer to rectangle '''
         self.set_window(x, y, x + width - 1, y + height - 1)
