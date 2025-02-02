@@ -17,5 +17,5 @@ Testé sur ESP32-C3 Supermini
 L'argument disp_mode du constructeurdétermine l'orientation de l'affichage:
 
 <p align="center">
-  <img src="./display_mode.png" width="800">
+  <img src="./display modes.png" width="800">
 <p/>
